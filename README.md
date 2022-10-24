@@ -1,4 +1,7 @@
 # Template to Spawn Redis Cluster inside Docker
+This repository provides a script to spawn redis cluster docker container.
+
+## How to spawn redis cluster?
 
 1. Create a docker network by enter the following command:
 
@@ -24,4 +27,11 @@ docker exec -it redis_1 bash
 redis-cli -a {password} CONFIG get cluster-enabled
 
 redis-cli -a {password} cluster nodes
+```
+
+## How to destroy/delete the redis container volume?
+
+```shell
+chmod +x destroy-redis-volume.sh
+./destroy-redis-volume.sh
 ```
