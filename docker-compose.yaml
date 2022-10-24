@@ -1,0 +1,127 @@
+version: '3.8'
+volumes:
+  redis_1_data: {}
+  redis_2_data: {}
+  redis_3_data: {}
+  redis_4_data: {}
+  redis_5_data: {}
+  redis_6_data: {}
+services:
+  # Here we have three Redis containers with Cluster mode enabled,
+  # three of them will work as master nodes and each one of
+  # will have a replica, so in case of failures, the replica becomes the master.
+  # They are configured by the `cluster_initiator` container.
+  redis_1:
+    image: 'redis:latest'
+    container_name: redis_1
+    build: ./docker/redis
+    ports:
+      - "6378:6379"
+    volumes:
+      - redis_1_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+    networks:
+      redis_cluster_net:
+        ipv4_address: 173.18.0.2
+
+  redis_2:
+    image: 'redis:latest'
+    container_name: redis_2
+    build: ./docker/redis
+    ports:
+      - "6377:6379"
+    volumes:
+      - redis_2_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+    networks:
+      redis_cluster_net:
+        ipv4_address: 173.18.0.3
+
+  redis_3:
+    image: 'redis:latest'
+    container_name: redis_3
+    build: ./docker/redis
+    ports:
+      - "6376:6379"
+    volumes:
+      - redis_3_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+    networks:
+      redis_cluster_net:
+        ipv4_address: 173.18.0.4
+
+  redis_4:
+    image: 'redis:latest'
+    container_name: redis_4
+    build: ./docker/redis
+    ports:
+      - "6375:6379"
+    volumes:
+      - redis_4_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+    networks:
+      redis_cluster_net:
+        ipv4_address: 173.18.0.5
+
+  redis_5:
+    image: 'redis:latest'
+    container_name: redis_5
+    build: ./docker/redis
+    ports:
+      - "6374:6379"
+    volumes:
+      - redis_5_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+    networks:
+      redis_cluster_net:
+        ipv4_address: 173.18.0.6
+  
+  redis_6:
+    image: 'redis:latest'
+    container_name: redis_6
+    build: ./docker/redis
+    ports:
+      - "6373:6379"
+    volumes:
+      - redis_6_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+    networks:
+      redis_cluster_net:
+        ipv4_address: 173.18.0.7
+
+  # Ephemeral container to create the Redis cluster connections.
+  # Once the setup is done, this container shuts down
+  # and the cluster can be used by the service app container
+  cluster_initiator:
+    container_name: cluster_initiator
+    build: ./docker/cluster
+    tty: true
+    depends_on:
+      - redis_1
+      - redis_2
+      - redis_3
+      - redis_4
+      - redis_5
+      - redis_6
+    networks:
+      redis_cluster_net:
+        ipv4_address: 173.18.0.8
+
+# Rename the default network so we can easily identify it
+# Across all containers
+networks:
+  redis_cluster_net:
+    external: true
+    name: redis_cluster_net
+  # redis_cluster_net:
+    # driver: bridge
+    # ipam:
+    #   driver: default
+    #   config:
+    #     - subnet: 173.18.0.0/16
