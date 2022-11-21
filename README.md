@@ -12,7 +12,7 @@ docker network create --gateway 173.18.0.1 --subnet 173.18.0.0/24 redis_cluster_
 2. Execute the `docker-compose.yaml` script by enter the following command:
 
 ```shell
-docker-compose up -build -d
+docker-compose up --build -d
 ```
 
 3. After the process is finished. Check if the redis was created properly by enter the one of redis cluster container.
