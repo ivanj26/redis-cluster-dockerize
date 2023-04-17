@@ -1,4 +1,4 @@
-# Template to Spawn Redis Cluster inside Docker
+# Template to Spawn Redis Cluster with Segregation inside Docker
 This repository provides a script to spawn redis cluster docker container.
 
 ## How to spawn redis cluster?
